@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gus/agenda/pantalla_carcasa.dart';
+import 'package:gus/providers.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp( MultiBlocProvider(
+    providers: [...providersList],
+    child: MyApp(),
+  ),);
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -27,26 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: pantalla_day(), /*Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(onPressed: () {
-
-      Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => pantalla_day()),
-      );
-
-      }, child: Text('gus',) ),//
-
-
-
-
-
-
-
-          ],
-        )*/
+        child: pantalla_day(),
       ),
     );
   }

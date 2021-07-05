@@ -55,7 +55,7 @@ Future<bool> leer_preference_num_u_hora() async {
 */
 
 
-void guardar_day (){
+void guardar_day (List<String> list_day){
   String stri_day_full = "";
   for (int i = 0; i < list_day.length; ++i) {
     if(i == 0){stri_day_full = list_day[i];}
@@ -64,10 +64,10 @@ void guardar_day (){
   guardar_preference_day_hoy(stri_day_full);
 }
 
-void leer_preference_day_hoy() async {
+Future<List<String>> leer_preference_day_hoy() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String preferencia_actual = (prefs.getString('preferencia_day_0') ?? lista_100);
-  list_day = preferencia_actual.split("*");
+  return preferencia_actual.split("*");
 }
 
 void guardar_preference_day_ofset(int _preferencia_day_ofset) async {
@@ -75,9 +75,9 @@ void guardar_preference_day_ofset(int _preferencia_day_ofset) async {
   await prefs.setInt('preferencia_day_ofset', _preferencia_day_ofset);
 }
 
-void leer_preference_day_ofset() async {
+Future<int> leer_preference_day_ofset() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  day_ofset = (prefs.getInt('preferencia_day_ofset') ?? 0);
+  return (prefs.getInt('preferencia_day_ofset') ?? 0);
 }
 
 void guardar_preference_num_u_hora(bool num_u_hora) async {
@@ -85,7 +85,7 @@ void guardar_preference_num_u_hora(bool num_u_hora) async {
   await prefs.setBool('preferencia_num_u_hora', num_u_hora);
 }
 
-void leer_preference_num_u_hora() async {
+ Future<bool> leer_preference_num_u_hora() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  num_u_hora = (prefs.getBool('preferencia_num_u_hora') ?? true);
+  return (prefs.getBool('preferencia_num_u_hora') ?? true);
 }
