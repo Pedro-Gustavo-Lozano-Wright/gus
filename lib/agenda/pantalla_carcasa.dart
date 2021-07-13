@@ -5,9 +5,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gus/agenda/bloc/agenda_bloc.dart';
 import 'package:gus/agenda/reorderable_list.dart';
 import 'package:gus/agenda/shared_preferences.dart';
+import 'package:gus/agenda/temas.dart';
 import 'package:gus/agenda/variables_globales.dart';
+import 'package:hive/hive.dart';
+
+import 'caja_de_arena.dart';
+import 'desplegable.dart';
+import 'hive/transaction.dart';
+import 'menu_temas.dart';
+
 
 class pantalla_day extends StatefulWidget {
+  final Color color_de_fondo;
+
+  const pantalla_day({Key key, this.color_de_fondo,}) : super(key: key);
   @override
   _pantalla_dayState createState() => _pantalla_dayState();
 }
@@ -16,6 +27,7 @@ class _pantalla_dayState extends State<pantalla_day>
     with WidgetsBindingObserver {
 
   int day_ofset = 0;
+  int menu_tema = 0;
 
   AgendaBloc agendaBloc;
 
@@ -38,7 +50,9 @@ class _pantalla_dayState extends State<pantalla_day>
     Future.delayed(const Duration(milliseconds: 100), () async {
       day_ofset = await leer_preference_day_ofset();
       list_day = await leer_preference_day_hoy();
+      menu_tema = await leer_preference_menu_tema();
       num_u_hora = await leer_preference_num_u_hora();
+
     });
 
 
@@ -46,60 +60,60 @@ class _pantalla_dayState extends State<pantalla_day>
       agendaBloc.add(LoadAgendaEvent());
     });
 
-    var now_time = DateTime.now();
-    String stri_dey_week = "";
-    if (now_time.weekday == 0) {
-      stri_dey_week = "Sun";
-    } else if (now_time.weekday == 1) {
-      stri_dey_week = "Mon";
-    } else if (now_time.weekday == 2) {
-      stri_dey_week = "Tue";
-    } else if (now_time.weekday == 3) {
-      stri_dey_week = "Wed";
-    } else if (now_time.weekday == 4) {
-      stri_dey_week = "Thu";
-    } else if (now_time.weekday == 5) {
-      stri_dey_week = "Fri";
-    } else if (now_time.weekday == 6) {
-      stri_dey_week = "Sat";
-    } else if (now_time.weekday == 7) {
-      stri_dey_week = "Sun";
+    var nowTime = DateTime.now();
+    String striDeyWeek = "";
+    if (nowTime.weekday == 0) {
+      striDeyWeek = "Sun";
+    } else if (nowTime.weekday == 1) {
+      striDeyWeek = "Mon";
+    } else if (nowTime.weekday == 2) {
+      striDeyWeek = "Tue";
+    } else if (nowTime.weekday == 3) {
+      striDeyWeek = "Wed";
+    } else if (nowTime.weekday == 4) {
+      striDeyWeek = "Thu";
+    } else if (nowTime.weekday == 5) {
+      striDeyWeek = "Fri";
+    } else if (nowTime.weekday == 6) {
+      striDeyWeek = "Sat";
+    } else if (nowTime.weekday == 7) {
+      striDeyWeek = "Sun";
     }
 
-    String stri_month = "";
-    if (now_time.month == 0) {
-      stri_month = "Jan";
-    } else if (now_time.month == 1) {
-      stri_month = "Feb";
-    } else if (now_time.month == 2) {
-      stri_month = "Mar";
-    } else if (now_time.month == 3) {
-      stri_month = "Apr";
-    } else if (now_time.month == 4) {
-      stri_month = "May";
-    } else if (now_time.month == 5) {
-      stri_month = "Jun";
-    } else if (now_time.month == 6) {
-      stri_month = "Jul";
-    } else if (now_time.month == 7) {
-      stri_month = "Aug";
-    } else if (now_time.month == 8) {
-      stri_month = "Sep";
-    } else if (now_time.month == 9) {
-      stri_month = "Oct";
-    } else if (now_time.month == 10) {
-      stri_month = "Nov";
-    } else if (now_time.month == 11) {
-      stri_month = "Dec";
+    String striMonth = "";
+    if (nowTime.month == 0) {
+      striMonth = "Jan";
+    } else if (nowTime.month == 1) {
+      striMonth = "Feb";
+    } else if (nowTime.month == 2) {
+      striMonth = "Mar";
+    } else if (nowTime.month == 3) {
+      striMonth = "Apr";
+    } else if (nowTime.month == 4) {
+      striMonth = "May";
+    } else if (nowTime.month == 5) {
+      striMonth = "Jun";
+    } else if (nowTime.month == 6) {
+      striMonth = "Jul";
+    } else if (nowTime.month == 7) {
+      striMonth = "Aug";
+    } else if (nowTime.month == 8) {
+      striMonth = "Sep";
+    } else if (nowTime.month == 9) {
+      striMonth = "Oct";
+    } else if (nowTime.month == 10) {
+      striMonth = "Nov";
+    } else if (nowTime.month == 11) {
+      striMonth = "Dec";
     }
 
     setState(() {
       hoy_day = "   " +
-          stri_dey_week +
+          striDeyWeek +
           " " +
-          now_time.day.toString() +
+          nowTime.day.toString() +
           " " +
-          stri_month +
+          striMonth +
           "   "; //+ " " + now_time.hour.toString() + ":" + now_time.minute.toString();
     });
   }
@@ -112,40 +126,78 @@ class _pantalla_dayState extends State<pantalla_day>
     h_pantalla = MediaQuery.of(context).size.height;
     h_pantalla = double.parse(h_pantalla.toStringAsFixed(0)) - 55;
 
+
+
     return BlocBuilder<AgendaBloc, AgendaState>(
         builder: (context, state) {
           if (state is LoadAgendaState){
-
             return Container(
-              color: color_de_fondo,
+              color: widget.color_de_fondo,
               padding: EdgeInsets.only(top: 30),
               child: Column(
                 children: [
+                  Container(height: 20,),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 5, left: 10),
+                    child: desplegable(
+                      color_de_fondo: widget.color_de_fondo,
+                      title: Row(
+                        children: [
+                          Stack(
+                            children: [
+                              Transform.translate(offset: Offset(-30.0, -5.0),child: Stack(
+                                  children: [
+                                    Lista_de_temas(color_de_fondo: widget.color_de_fondo,preference_tema_menu: menu_tema,
+                                    onUpdate: (new_menu_tema){
+                                      guardar_preference_menu_tema(new_menu_tema);
+                                      menu_tema = new_menu_tema;
+                                      AgendaBloc agendaBloc;
+                                      agendaBloc = BlocProvider.of<AgendaBloc>(context);
+                                      agendaBloc.add(TemaEvent());
+                                    },),
+                                    Transform.translate(offset: Offset(19.0, 38.0),child: Container(
+                                      height: 4.0,
+                                      width: 60.0,
+                                      color: widget.color_de_fondo
+                                    )),
+                                  ],
+                                ),
+                              ),
+                              Transform.translate(offset: Offset(45.0, 15.0),child:  Text(titulos_temas[menu_tema],style: TextStyle(color: Colors.grey),)),
+
+                            ],
+                          ),
+                          SizedBox(width: 10,),
+                          Transform.translate(offset: Offset(0.0, 3.0),child:  Text("algo",style: TextStyle(color: Colors.grey),)),
+                        ],
+                      ),
+                      body: Column(
+                        children: [
+                          Text("cuerpo",style: TextStyle(color: Colors.grey),),
+                          Container(height: 1, color: Colors.grey)
+                        ],
+                      ),
+                    ),
+                  ),
                   Container(
-                    child: Center(
+                    child: Expanded(flex: 1,
                       child: Container(
-                        height: h_pantalla,
-                        child: ReorderableListView(
+                        child: ReorderableListView.builder(
                           scrollController: ScrollController(keepScrollOffset: true),
                           shrinkWrap: true,
                           //physics: NeverScrollableScrollPhysics(),
                           onReorder: _onReorder,
                           scrollDirection: Axis.vertical,
-                          padding: EdgeInsets.all(0.0),
-                          children: List.generate(
-                            list_day.length,
-                                (index) {
-                              return ListViewCard(
-                                day_ofset: day_ofset,
-                                w_pantalla: w_pantalla,
-                                key: Key('$index'),
-                                index: index,
-                                listItems: list_day,
-                                num_u_hora: num_u_hora,
-                                list_day: list_day
-                              );
-                            },
-                          ),
+                          itemCount: list_day.length,
+                          itemBuilder: (BuildContext context, int index) { return ListViewCard(
+                            color_de_fondo: widget.color_de_fondo,
+                              day_ofset: day_ofset,
+                              w_pantalla: w_pantalla,
+                              key: Key('$index'),
+                              index: index,
+                              num_u_hora: num_u_hora,
+                              list_day: list_day
+                          ); },
                         ),
                       ),
                     ),
@@ -162,31 +214,120 @@ class _pantalla_dayState extends State<pantalla_day>
                               width: 10,
                               height: 1,
                             ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 3),
+                              child: Container(
+                                width: 20,
+                                color: widget.color_de_fondo,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.all(0),
+                                    primary: widget.color_de_fondo,
+                                  ),
+                                  child: Icon(
+                                    Icons.access_time,
+                                    size: 20,
+                                    color: Colors.grey,
+                                  ),
+                                  onPressed: () {
+                                    if (num_u_hora) {
+                                      num_u_hora = false;
+                                      guardar_preference_num_u_hora(num_u_hora);
+                                    } else {
+                                      num_u_hora = true;
+                                      guardar_preference_num_u_hora(num_u_hora);
+                                    }
+                                    agendaBloc.add(LoadAgendaEvent());
+                                  },
+                                ),
+                              ),
+                            ),
                             Container(
-                              width: 20,
-                              color: color_de_fondo,
+                              width: 10,
+                              height: 1,
+                            ),
+                            Container(
+                              color:widget.color_de_fondo,
+                              width: !num_u_hora ? 30 : 0,
+                              height: 20,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  padding: EdgeInsets.all(0),
-                                  primary: Colors.black,
-                                ),
-                                child: Icon(
-                                  Icons.access_time,
-                                  size: 18,
-                                  color: color_principal,
-                                ),
+                                    padding: EdgeInsets.all(0),
+                                    primary: widget.color_de_fondo,
+                                    side: BorderSide(color: Colors.grey)),
+                                child: Transform.translate(
+                                    offset: Offset(0, -2),
+                                    child: !num_u_hora
+                                        ? Icon(
+                                      Icons.keyboard_arrow_up,
+                                      color: Colors.grey,
+                                    )
+                                        : Container()),
                                 onPressed: () {
-                                  if (num_u_hora) {
-                                    num_u_hora = false;
-                                    guardar_preference_num_u_hora(num_u_hora);
-                                  } else {
-                                    num_u_hora = true;
-                                    guardar_preference_num_u_hora(num_u_hora);
-                                  }
+                                  day_ofset = day_ofset + 10;
+                                  guardar_preference_day_ofset(day_ofset);
                                   agendaBloc.add(LoadAgendaEvent());
                                 },
                               ),
-                            )
+                            ),
+                            Container(
+                              width: !num_u_hora ? 10 : 0,
+                              height: 1,
+                            ),
+                            Container(
+                              color:widget.color_de_fondo,
+                              width: !num_u_hora ? 40 : 0,
+                              height: 20,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.all(0),
+                                    primary: widget.color_de_fondo,
+                                    side: BorderSide(color: Colors.grey)),
+                                child: Text(
+                                  "Now",
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontStyle: FontStyle.italic,
+                                      fontSize: 13),
+                                ),
+                                onPressed: () {
+                                  var now = DateTime.now();
+                                  int minDeHoraAhora = now.hour * 60;
+                                  int minAhora = now.minute - ((now.minute) % 10);
+                                  day_ofset = minDeHoraAhora + minAhora;
+                                  guardar_preference_day_ofset(day_ofset);
+                                  agendaBloc.add(LoadAgendaEvent());
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: !num_u_hora ? 10 : 0,
+                              height: 1,
+                            ),
+                            Container(
+                              color:widget.color_de_fondo,
+                              width: !num_u_hora ? 30 : 0,
+                              height: 20,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.all(0),
+                                    primary: widget.color_de_fondo,
+                                    side: BorderSide(color: Colors.grey)),
+                                child: Transform.translate(
+                                    offset: Offset(0, -2),
+                                    child: !num_u_hora
+                                        ? Icon(
+                                      Icons.keyboard_arrow_down,
+                                      color: Colors.grey,
+                                    )
+                                        : Container()),
+                                onPressed: () {
+                                  day_ofset = day_ofset - 10;
+                                  guardar_preference_day_ofset(day_ofset);
+                                  agendaBloc.add(LoadAgendaEvent());
+                                },
+                              ),
+                            ),
                           ],
                         ),
                         Row(
@@ -194,143 +335,54 @@ class _pantalla_dayState extends State<pantalla_day>
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Container(
-                                width: 10,
-                                height: 1,
-                              ),
-                              Container(
-                                color: color_de_fondo,
+                                color:widget.color_de_fondo,
                                 height: 20,
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                       padding: EdgeInsets.all(0),
-                                      primary: Colors.black,
+                                      primary: widget.color_de_fondo,
+                                      side: BorderSide(color: Colors.grey)),
+                                  child: Text(
+                                    "hive",
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontStyle: FontStyle.italic,
+                                        fontSize: 13),
+                                  ),
+                                  onPressed: () {
+
+
+                                  },
+                                ),
+                              ),
+                              Container(
+                                width: 10,
+                                height: 1,
+                              ),
+                              Container(
+                                color:widget.color_de_fondo,
+                                height: 20,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      padding: EdgeInsets.all(0),
+                                      primary: widget.color_de_fondo,
                                       side: BorderSide(color: Colors.grey)),
                                   child: Text(
                                     hoy_day,
                                     style: TextStyle(
-                                        color: color_principal,
+                                        color: Colors.grey,
                                         fontStyle: FontStyle.italic,
                                         fontSize: 13),
                                   ),
-                                  onPressed: () {},
-                                ),
-                              ),
-                              Container(
-                                width: 10,
-                                height: 1,
-                              ),
-                              Container(
-                                color: color_de_fondo,
-                                width: 25,
-                                height: 20,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      padding: EdgeInsets.all(0),
-                                      primary: Colors.black,
-                                      side: BorderSide(color: Colors.grey)),
-                                  child: Transform.translate(
-                                      offset: Offset(0, 0),
-                                      child: Icon(
-                                        Icons.play_arrow,
-                                        color: color_principal,
-                                        size: 18,
-                                      )),
                                   onPressed: () {
-                                    setState(() {
-                                      if (init_day) {
-                                        init_day = false;
-                                      } else {
-                                        init_day = true;
-                                      }
-                                    });
+                                    Navigator.push(context,MaterialPageRoute(builder: (context) => sub_arbol_menu()),);
+
                                   },
                                 ),
                               ),
                               Container(
                                 width: 10,
                                 height: 1,
-                              ),
-                              Container(
-                                color: color_de_fondo,
-                                width: init_day ? 30 : 0,
-                                height: 20,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      padding: EdgeInsets.all(0),
-                                      primary: Colors.black,
-                                      side: BorderSide(color: Colors.grey)),
-                                  child: Transform.translate(
-                                      offset: Offset(0, -2),
-                                      child: init_day
-                                          ? Icon(
-                                        Icons.keyboard_arrow_up,
-                                        color: color_principal,
-                                      )
-                                          : Container()),
-                                  onPressed: () {
-                                    day_ofset = day_ofset + 10;
-                                    guardar_preference_day_ofset(day_ofset);
-                                    agendaBloc.add(LoadAgendaEvent());
-                                  },
-                                ),
-                              ),
-                              Container(
-                                width: init_day ? 10 : 0,
-                                height: 1,
-                              ),
-                              Container(
-                                color: color_de_fondo,
-                                width: init_day ? 40 : 0,
-                                height: 20,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      padding: EdgeInsets.all(0),
-                                      primary: Colors.black,
-                                      side: BorderSide(color: Colors.grey)),
-                                  child: Text(
-                                    "Now",
-                                    style: TextStyle(
-                                        color: color_principal,
-                                        fontStyle: FontStyle.italic,
-                                        fontSize: 13),
-                                  ),
-                                  onPressed: () {
-                                    var now = DateTime.now();
-                                    int min_de_hora_ahora = now.hour * 60;
-                                    int min_ahora = now.minute - ((now.minute) % 10);
-                                    day_ofset = min_de_hora_ahora + min_ahora;
-                                    guardar_preference_day_ofset(day_ofset);
-                                    agendaBloc.add(LoadAgendaEvent());
-                                  },
-                                ),
-                              ),
-                              Container(
-                                width: init_day ? 10 : 0,
-                                height: 1,
-                              ),
-                              Container(
-                                color: color_de_fondo,
-                                width: init_day ? 30 : 0,
-                                height: 20,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      padding: EdgeInsets.all(0),
-                                      primary: Colors.black,
-                                      side: BorderSide(color: Colors.grey)),
-                                  child: Transform.translate(
-                                      offset: Offset(0, -2),
-                                      child: init_day
-                                          ? Icon(
-                                        Icons.keyboard_arrow_down,
-                                        color: color_principal,
-                                      )
-                                          : Container()),
-                                  onPressed: () {
-                                    day_ofset = day_ofset - 10;
-                                    guardar_preference_day_ofset(day_ofset);
-                                    agendaBloc.add(LoadAgendaEvent());
-                                  },
-                                ),
                               ),
                             ]),
                       ],
@@ -342,12 +394,6 @@ class _pantalla_dayState extends State<pantalla_day>
           }else{return Container();}
         },
       );
-
-
-
-
-
-
   }
 
   void _onReorder(int oldIndex, int newIndex) {
@@ -367,3 +413,5 @@ class _pantalla_dayState extends State<pantalla_day>
   }
 
 }
+
+

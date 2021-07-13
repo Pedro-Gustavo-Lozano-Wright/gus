@@ -89,3 +89,14 @@ void guardar_preference_num_u_hora(bool num_u_hora) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   return (prefs.getBool('preferencia_num_u_hora') ?? true);
 }
+
+
+void guardar_preference_menu_tema(int _preferencia_menu_tema) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setInt('preferencia_menu_tema', _preferencia_menu_tema);
+}
+
+Future<int> leer_preference_menu_tema() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return (prefs.getInt('preferencia_menu_tema') ?? 0);
+}

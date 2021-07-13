@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gus/agenda/hive/transaction.dart';
 import 'package:gus/agenda/pantalla_carcasa.dart';
 import 'package:gus/providers.dart';
-
-void main() {
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
   runApp( MultiBlocProvider(
     providers: [...providersList],
     child: MyApp(),
@@ -32,9 +36,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    Color color_de_fondo = Colors.black;
     return Scaffold(
       body: Center(
-        child: pantalla_day(),
+        child: pantalla_day(color_de_fondo: color_de_fondo),
       ),
     );
   }

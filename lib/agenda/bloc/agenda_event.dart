@@ -14,3 +14,36 @@ class LoadAgendaEvent extends AgendaEvent {
   String toString() => 'LoadAgendaEvent';
 
 }
+
+class EnterEvent extends AgendaEvent {
+  const EnterEvent();
+
+  @override
+  List<Object> get props => [];
+
+  @override
+  String toString() => 'EnterEvent';
+
+}
+
+class PalomearEvent extends AgendaEvent {
+  const PalomearEvent();
+
+  @override
+  List<Object> get props => [];
+
+  @override
+  String toString() => 'PalomearEvent';
+
+}
+
+class TemaEvent extends AgendaEvent {
+  const TemaEvent();
+
+  @override
+  List<Object> get props => [];
+
+  @override
+  String toString() => 'TemaEvent';
+
+}

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
 
-Color color_de_fondo = Colors.black;
-Color color_principal = Colors.grey;
-
+bool edit_acces_global = false;
 
