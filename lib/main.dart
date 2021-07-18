@@ -1,10 +1,26 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gus/agenda/hive/transaction.dart';
 import 'package:gus/agenda/pantalla_carcasa.dart';
 import 'package:gus/providers.dart';
 import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart' as pathProvider;
+
+import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'hive_adapters.dart';
+
+/*Future<void> main()  {
+  Directory directory = await pathProvider.getApplicationDocumentsDirectory();
+  Hive.init(directory.path);
+  runApp( MultiBlocProvider(
+    providers: [...providersList],
+    child: MyApp(),
+  ),);
+
+}*/
+/*
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
@@ -12,7 +28,22 @@ void main() async{
     providers: [...providersList],
     child: MyApp(),
   ),);
+}*/
+
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+  registerHiveAdapter();
+
+  runApp( MultiBlocProvider(
+    providers: [...providersList],
+    child: MyApp(),
+  ),);
+
 }
+
 
 class MyApp extends StatelessWidget {
   @override

@@ -47,3 +47,34 @@ class TemaEvent extends AgendaEvent {
   String toString() => 'TemaEvent';
 
 }
+
+class salvePersonEvent extends AgendaEvent {
+
+  final Meta meta;
+
+  const salvePersonEvent({this.meta});
+
+  @override
+  List<Object> get props => [meta];
+
+}
+
+class getPersonEvent extends AgendaEvent {
+
+  const getPersonEvent();
+
+  @override
+  List<Object> get props => [];
+
+}
+
+class addSubMetaEvent extends AgendaEvent {
+
+  final Meta subMeta;
+
+  const addSubMetaEvent({this.subMeta});
+
+  @override
+  List<Object> get props => [subMeta];
+
+}

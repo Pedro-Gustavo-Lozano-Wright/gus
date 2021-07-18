@@ -10,8 +10,8 @@ import 'package:gus/agenda/variables_globales.dart';
 import 'package:hive/hive.dart';
 
 import 'caja_de_arena.dart';
+import 'db_meta/modelo_meta.dart';
 import 'desplegable.dart';
-import 'hive/transaction.dart';
 import 'menu_temas.dart';
 
 
@@ -127,6 +127,26 @@ class _pantalla_dayState extends State<pantalla_day>
     h_pantalla = double.parse(h_pantalla.toStringAsFixed(0)) - 55;
 
 
+    var now = DateTime.now();
+    var born = DateTime.utc(1996, 1, 26);
+
+    var time_avilable = now.difference(born.add(Duration(days: (365 * 100) + 25)));
+    var time_avilable_mitad = now.difference(born.add(Duration(days: (365 * 50) + 13)));
+    var time_avilable_treinta = now.difference(born.add(Duration(days: (365 * 30) + 7)));//10^6
+    //var time_avilable_29 = now.difference(born.add(Duration(days: (365 * 30) + 7)));//10^5
+    //var time_avilable_28 = now.difference(born.add(Duration(days: (365 * 30) + 7)));//10^4
+    //var time_avilable_27 = now.difference(born.add(Duration(days: (365 * 30) + 7)));//10^3
+    var time_avilable_26 = now.difference(born.add(Duration(days: (365 * 30) + 7)));//10^2
+    //25 10^1
+    Widget tiempo_limite = Container(child: Column(
+      children: [
+        Text("${time_avilable.inDays} Dias antes de morir" ,style: TextStyle(color: Colors.grey),),
+        Text("${time_avilable_mitad.inDays} Dias antes de caida, tiempo limite para restart",style: TextStyle(color: Colors.grey),),
+        Text("${time_avilable_treinta.inDays} Dias para 10^6 Dolar",style: TextStyle(color: Colors.grey),),
+        Text("${time_avilable_26.inDays} Dias para 10^2 Dolar (AI)",style: TextStyle(color: Colors.grey),),
+      ],
+    ),);
+
 
     return BlocBuilder<AgendaBloc, AgendaState>(
         builder: (context, state) {
@@ -173,7 +193,7 @@ class _pantalla_dayState extends State<pantalla_day>
                       ),
                       body: Column(
                         children: [
-                          Text("cuerpo",style: TextStyle(color: Colors.grey),),
+                          tiempo_limite,
                           Container(height: 1, color: Colors.grey)
                         ],
                       ),
@@ -210,7 +230,7 @@ class _pantalla_dayState extends State<pantalla_day>
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Container(
+                            /*Container(
                               width: 10,
                               height: 1,
                             ),
@@ -327,14 +347,14 @@ class _pantalla_dayState extends State<pantalla_day>
                                   agendaBloc.add(LoadAgendaEvent());
                                 },
                               ),
-                            ),
+                            ),*/
                           ],
                         ),
                         Row(
                             textDirection: TextDirection.rtl,
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Container(
+                              /*Container(
                                 color:widget.color_de_fondo,
                                 height: 20,
                                 child: ElevatedButton(
@@ -354,12 +374,12 @@ class _pantalla_dayState extends State<pantalla_day>
 
                                   },
                                 ),
-                              ),
+                              ),*/
                               Container(
                                 width: 10,
                                 height: 1,
                               ),
-                              Container(
+                             /* Container(
                                 color:widget.color_de_fondo,
                                 height: 20,
                                 child: ElevatedButton(
@@ -379,7 +399,108 @@ class _pantalla_dayState extends State<pantalla_day>
 
                                   },
                                 ),
+                              ),*/
+                              Container(
+                                width: 10,
+                                height: 1,
                               ),
+                              Container(
+                                color:widget.color_de_fondo,
+                                height: 20,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      padding: EdgeInsets.all(0),
+                                      primary: widget.color_de_fondo,
+                                      side: BorderSide(color: Colors.grey)),
+                                  child: Text(
+                                    "guardar",
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontStyle: FontStyle.italic,
+                                        fontSize: 13),
+                                  ),
+                                  onPressed: () {
+
+
+                                    AgendaBloc agendaBloc;
+                                    agendaBloc = BlocProvider.of<AgendaBloc>(context);
+
+                                    Meta meta1 = Meta(titulo: "jiji", descripcion: "gab", id: 24);
+                                    agendaBloc.add(salvePersonEvent(meta: meta1));
+
+
+
+                                    //Persona item = Persona(age: 25, name: "gus");addItem(item);
+                                  },
+                                ),
+                              ),
+                              Container(
+                                width: 10,
+                                height: 1,
+                              ),
+                              Container(
+                                color:widget.color_de_fondo,
+                                height: 20,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      padding: EdgeInsets.all(0),
+                                      primary: widget.color_de_fondo,
+                                      side: BorderSide(color: Colors.grey)),
+                                  child: Text(
+                                    "leer",
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontStyle: FontStyle.italic,
+                                        fontSize: 13),
+                                  ),
+                                  onPressed: () {
+
+                                    AgendaBloc agendaBloc;
+                                    agendaBloc = BlocProvider.of<AgendaBloc>(context);
+                                    agendaBloc.add(getPersonEvent());
+
+                                    //Persona item = Persona(age: 25, name: "tavo");updateItem(0,item);
+
+                                  },
+                                ),
+                              ),
+                              Container(
+                                width: 10,
+                                height: 1,
+                              ),
+                              Container(
+                                color:widget.color_de_fondo,
+                                height: 20,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      padding: EdgeInsets.all(0),
+                                      primary: widget.color_de_fondo,
+                                      side: BorderSide(color: Colors.grey)),
+                                  child: Text(
+                                    "añadir",
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontStyle: FontStyle.italic,
+                                        fontSize: 13),
+                                  ),
+                                  onPressed: () {
+
+                                    AgendaBloc agendaBloc;
+                                    agendaBloc = BlocProvider.of<AgendaBloc>(context);
+
+                                    Meta subMeta = Meta(titulo: "submeta jiji", descripcion: "sub descrip jiji", id: 3);
+                                    agendaBloc.add(addSubMetaEvent(subMeta: subMeta));
+
+                                    //Persona item = Persona(age: 25, name: "tavo");updateItem(0,item);
+
+                                  },
+                                ),
+                              ),
+                              Container(
+                                width: 10,
+                                height: 1,
+                              ),
+
                               Container(
                                 width: 10,
                                 height: 1,
