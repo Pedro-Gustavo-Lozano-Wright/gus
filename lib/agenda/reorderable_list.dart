@@ -5,7 +5,7 @@ import 'package:gus/agenda/shared_preferences.dart';
 import 'package:gus/agenda/variables_globales.dart';
 
 import 'bloc/agenda_bloc.dart';
-import 'desplegable.dart';
+import '../desplegable.dart';
 
 class ListViewCard extends StatefulWidget {
   final Color color_de_fondo;
@@ -87,7 +87,7 @@ class _ListViewCard extends State<ListViewCard> {
           return Container(//height: 21,
             child: Card(color: widget.color_de_fondo, margin: EdgeInsets.only(top: 0.5, bottom: 0.5),
               child: Container(margin: EdgeInsets.only(right: 5, left: 5), color: Colors.grey.withOpacity(destacar_fila),
-                child: desplegable(
+                child: desplegable(desplegado: false,
                   color_de_fondo:  widget.color_de_fondo,
                   title: edit_acces && edit_acces_global ? editar_agenda(context) : ver_agenda(context),
                   body: Column(
@@ -115,6 +115,7 @@ class _ListViewCard extends State<ListViewCard> {
   }
 
   Widget editar_agenda(BuildContext context) {
+
     myFocusNode = FocusNode();
     myFocusNode.requestFocus();
     texcontrol_1.text = widget.list_day[widget.index].substring(1);
@@ -126,7 +127,7 @@ class _ListViewCard extends State<ListViewCard> {
       child: Row(
         children: [
           text_numero (color_day_now, widget.num_u_hora),
-          Container(width: widget.w_pantalla - 120,
+          Container(width: widget.w_pantalla - 100,
             child: Transform.translate(offset: Offset(0, 1.5),child:
             TextField(
               focusNode: myFocusNode,
@@ -199,7 +200,7 @@ class _ListViewCard extends State<ListViewCard> {
             },
           )),
           Container(width: 10,),
-          Container(width: 20, height: 20, child: FlatButton(
+         /* Container(width: 20, height: 20, child: FlatButton(
             child: Icon(Icons.check_box, color: color_day_now, size: 20,),
             padding: EdgeInsets.all(0),
             onPressed: (){
@@ -212,7 +213,7 @@ class _ListViewCard extends State<ListViewCard> {
               agendaBloc.add(PalomearEvent());
               //Future.delayed(const Duration(milliseconds: 100), () { FocusScope.of(context).requestFocus( FocusNode()); });
             },
-          ))
+          ))*/
         ],
       ),
      ),);
@@ -237,7 +238,7 @@ class _ListViewCard extends State<ListViewCard> {
       child: Row(
         children: [
           text_numero(color_day_now, widget.num_u_hora),
-          Container(width:(widget.w_pantalla -60),
+          Container(width:(widget.w_pantalla -80),
             child: FlatButton(
               child: Row(
                 children: [
@@ -269,6 +270,14 @@ class _ListViewCard extends State<ListViewCard> {
                 guardar_day(widget.list_day);
               },
             ),
+          ),
+
+          Container(height: 20, width: 20,
+            child: TextButton(
+                style: ElevatedButton.styleFrom(padding: EdgeInsets.all(0)),
+                onPressed: (){
+
+                }, child: Center(child: Icon(false ? Icons.check_box_outlined :  Icons.check_box_outline_blank_outlined, size: 18,color: Colors.grey ))),
           ),
           //Container(width: 20, height: 20, child: Icon(Icons.stop, color: color_day_now.withOpacity(0.8), size: 15,)),
         ],

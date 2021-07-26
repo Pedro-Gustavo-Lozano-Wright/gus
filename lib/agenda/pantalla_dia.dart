@@ -7,35 +7,33 @@ import 'package:gus/agenda/reorderable_list.dart';
 import 'package:gus/agenda/shared_preferences.dart';
 import 'package:gus/agenda/temas.dart';
 import 'package:gus/agenda/variables_globales.dart';
+import 'package:gus/db_meta/modelo_meta.dart';
 import 'package:hive/hive.dart';
 
-import 'caja_de_arena.dart';
-import 'db_meta/modelo_meta.dart';
-import 'desplegable.dart';
+import '../caja_de_arena.dart';
+import '../desplegable.dart';
 import 'menu_temas.dart';
 
 
-class pantalla_day extends StatefulWidget {
+class Pantalla_day extends StatefulWidget {
   final Color color_de_fondo;
+  final double h_pantalla;
 
-  const pantalla_day({Key key, this.color_de_fondo,}) : super(key: key);
+  const Pantalla_day({Key key, this.color_de_fondo, this.h_pantalla,}) : super(key: key);
   @override
-  _pantalla_dayState createState() => _pantalla_dayState();
+  _Pantalla_dayState createState() => _Pantalla_dayState();
 }
 
-class _pantalla_dayState extends State<pantalla_day>
+class _Pantalla_dayState extends State<Pantalla_day>
     with WidgetsBindingObserver {
 
   int day_ofset = 0;
-  int menu_tema = 0;
-
   AgendaBloc agendaBloc;
 
   double w_pantalla = 1.0;
   double h_pantalla = 1.0;
 
   List<String> list_day = [];
-  String hoy_day = "";
 
   bool num_u_hora = true;
 
@@ -50,7 +48,6 @@ class _pantalla_dayState extends State<pantalla_day>
     Future.delayed(const Duration(milliseconds: 100), () async {
       day_ofset = await leer_preference_day_ofset();
       list_day = await leer_preference_day_hoy();
-      menu_tema = await leer_preference_menu_tema();
       num_u_hora = await leer_preference_num_u_hora();
 
     });
@@ -60,62 +57,7 @@ class _pantalla_dayState extends State<pantalla_day>
       agendaBloc.add(LoadAgendaEvent());
     });
 
-    var nowTime = DateTime.now();
-    String striDeyWeek = "";
-    if (nowTime.weekday == 0) {
-      striDeyWeek = "Sun";
-    } else if (nowTime.weekday == 1) {
-      striDeyWeek = "Mon";
-    } else if (nowTime.weekday == 2) {
-      striDeyWeek = "Tue";
-    } else if (nowTime.weekday == 3) {
-      striDeyWeek = "Wed";
-    } else if (nowTime.weekday == 4) {
-      striDeyWeek = "Thu";
-    } else if (nowTime.weekday == 5) {
-      striDeyWeek = "Fri";
-    } else if (nowTime.weekday == 6) {
-      striDeyWeek = "Sat";
-    } else if (nowTime.weekday == 7) {
-      striDeyWeek = "Sun";
-    }
 
-    String striMonth = "";
-    if (nowTime.month == 0) {
-      striMonth = "Jan";
-    } else if (nowTime.month == 1) {
-      striMonth = "Feb";
-    } else if (nowTime.month == 2) {
-      striMonth = "Mar";
-    } else if (nowTime.month == 3) {
-      striMonth = "Apr";
-    } else if (nowTime.month == 4) {
-      striMonth = "May";
-    } else if (nowTime.month == 5) {
-      striMonth = "Jun";
-    } else if (nowTime.month == 6) {
-      striMonth = "Jul";
-    } else if (nowTime.month == 7) {
-      striMonth = "Aug";
-    } else if (nowTime.month == 8) {
-      striMonth = "Sep";
-    } else if (nowTime.month == 9) {
-      striMonth = "Oct";
-    } else if (nowTime.month == 10) {
-      striMonth = "Nov";
-    } else if (nowTime.month == 11) {
-      striMonth = "Dec";
-    }
-
-    setState(() {
-      hoy_day = "   " +
-          striDeyWeek +
-          " " +
-          nowTime.day.toString() +
-          " " +
-          striMonth +
-          "   "; //+ " " + now_time.hour.toString() + ":" + now_time.minute.toString();
-    });
   }
 
   @override
@@ -127,76 +69,24 @@ class _pantalla_dayState extends State<pantalla_day>
     h_pantalla = double.parse(h_pantalla.toStringAsFixed(0)) - 55;
 
 
-    var now = DateTime.now();
-    var born = DateTime.utc(1996, 1, 26);
-
-    var time_avilable = now.difference(born.add(Duration(days: (365 * 100) + 25)));
-    var time_avilable_mitad = now.difference(born.add(Duration(days: (365 * 50) + 13)));
-    var time_avilable_treinta = now.difference(born.add(Duration(days: (365 * 30) + 7)));//10^6
-    //var time_avilable_29 = now.difference(born.add(Duration(days: (365 * 30) + 7)));//10^5
-    //var time_avilable_28 = now.difference(born.add(Duration(days: (365 * 30) + 7)));//10^4
-    //var time_avilable_27 = now.difference(born.add(Duration(days: (365 * 30) + 7)));//10^3
-    var time_avilable_26 = now.difference(born.add(Duration(days: (365 * 30) + 7)));//10^2
-    //25 10^1
-    Widget tiempo_limite = Container(child: Column(
-      children: [
-        Text("${time_avilable.inDays} Dias antes de morir" ,style: TextStyle(color: Colors.grey),),
-        Text("${time_avilable_mitad.inDays} Dias antes de caida, tiempo limite para restart",style: TextStyle(color: Colors.grey),),
-        Text("${time_avilable_treinta.inDays} Dias para 10^6 Dolar",style: TextStyle(color: Colors.grey),),
-        Text("${time_avilable_26.inDays} Dias para 10^2 Dolar (AI)",style: TextStyle(color: Colors.grey),),
-      ],
-    ),);
-
-
     return BlocBuilder<AgendaBloc, AgendaState>(
         builder: (context, state) {
           if (state is LoadAgendaState){
             return Container(
               color: widget.color_de_fondo,
-              padding: EdgeInsets.only(top: 30),
               child: Column(
                 children: [
-                  Container(height: 20,),
                   Padding(
                     padding: const EdgeInsets.only(right: 5, left: 10),
-                    child: desplegable(
+                    child: desplegable(desplegado: false,
                       color_de_fondo: widget.color_de_fondo,
                       title: Row(
                         children: [
-                          Stack(
-                            children: [
-                              Transform.translate(offset: Offset(-30.0, -5.0),child: Stack(
-                                  children: [
-                                    Lista_de_temas(color_de_fondo: widget.color_de_fondo,preference_tema_menu: menu_tema,
-                                    onUpdate: (new_menu_tema){
-                                      guardar_preference_menu_tema(new_menu_tema);
-                                      menu_tema = new_menu_tema;
-                                      AgendaBloc agendaBloc;
-                                      agendaBloc = BlocProvider.of<AgendaBloc>(context);
-                                      agendaBloc.add(TemaEvent());
-                                    },),
-                                    Transform.translate(offset: Offset(19.0, 38.0),child: Container(
-                                      height: 4.0,
-                                      width: 60.0,
-                                      color: widget.color_de_fondo
-                                    )),
-                                  ],
-                                ),
-                              ),
-                              Transform.translate(offset: Offset(45.0, 15.0),child:  Text(titulos_temas[menu_tema],style: TextStyle(color: Colors.grey),)),
-
-                            ],
-                          ),
                           SizedBox(width: 10,),
                           Transform.translate(offset: Offset(0.0, 3.0),child:  Text("algo",style: TextStyle(color: Colors.grey),)),
                         ],
                       ),
-                      body: Column(
-                        children: [
-                          tiempo_limite,
-                          Container(height: 1, color: Colors.grey)
-                        ],
-                      ),
+
                     ),
                   ),
                   Container(
@@ -425,7 +315,7 @@ class _pantalla_dayState extends State<pantalla_day>
                                     AgendaBloc agendaBloc;
                                     agendaBloc = BlocProvider.of<AgendaBloc>(context);
 
-                                    Meta meta1 = Meta(titulo: "jiji", descripcion: "gab", id: 24);
+                                    Meta meta1 = Meta(titulo: "jiji", descripcion: "gab");
                                     agendaBloc.add(salvePersonEvent(meta: meta1));
 
 
@@ -488,10 +378,9 @@ class _pantalla_dayState extends State<pantalla_day>
                                     AgendaBloc agendaBloc;
                                     agendaBloc = BlocProvider.of<AgendaBloc>(context);
 
-                                    Meta subMeta = Meta(titulo: "submeta jiji", descripcion: "sub descrip jiji", id: 3);
+                                    Meta subMeta = Meta(titulo: "submeta jiji", descripcion: "sub descrip jiji");
                                     agendaBloc.add(addSubMetaEvent(subMeta: subMeta));
 
-                                    //Persona item = Persona(age: 25, name: "tavo");updateItem(0,item);
 
                                   },
                                 ),

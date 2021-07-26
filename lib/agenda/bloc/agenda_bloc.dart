@@ -2,8 +2,8 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:gus/agenda/db_meta/modelo_meta.dart';
-import 'package:gus/agenda/db_meta/repository_meta.dart';
+import 'package:gus/db_meta/modelo_meta.dart';
+import 'package:gus/db_meta/repository_meta.dart';
 import 'package:hive/hive.dart';
 
 part 'agenda_event.dart';

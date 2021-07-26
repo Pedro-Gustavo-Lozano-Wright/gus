@@ -4,13 +4,14 @@ import 'package:expandable/expandable.dart';
 
 class desplegable extends StatefulWidget {
   final Color color_de_fondo;
+  final bool desplegado;
   final Widget title;
   final Widget body;
   //final Widget collapsed;
   desplegable({
     this.title,
     this.body,
-    this.color_de_fondo,
+    this.color_de_fondo, this.desplegado,
     /*this.collapsed*/
   });
 
@@ -22,19 +23,10 @@ class _desplegableState extends State<desplegable> {
   @override
   Widget build(BuildContext context) {
     return ExpandableNotifier(
-      initialExpanded: false,
+      initialExpanded: widget.desplegado,
       child: Container(
         decoration: BoxDecoration(
           color: widget.color_de_fondo,
-          //border: Border.all(color: Colors.blue,),
-          //borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10.0),bottomRight: Radius.circular(10.0)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.15),
-              blurRadius: 20,
-              offset: Offset(0, 14), // changes position of shadow
-            ),
-          ],
         ),
         child: Column(
           children: <Widget>[

@@ -8,7 +8,6 @@ import 'modelo_meta.dart';
 class MetaRepository {
 
   Future<void> salveMetas(Meta persona) async {
-
     print(persona.toString());
     Box hiveBox = await Hive.openBox('hive');
     await hiveBox.put('persona', persona);

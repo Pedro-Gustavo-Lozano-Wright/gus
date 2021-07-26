@@ -2,13 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gus/agenda/pantalla_carcasa.dart';
+import 'package:gus/agenda/pantalla_dia.dart';
 import 'package:gus/providers.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
 
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'pantallas_de_navegacion.dart';
 import 'hive_adapters.dart';
 
 /*Future<void> main()  {
@@ -53,7 +54,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home:  MyHomePage(),
     );
   }
 }
@@ -68,10 +69,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     Color color_de_fondo = Colors.black;
-    return Scaffold(
-      body: Center(
-        child: pantalla_day(color_de_fondo: color_de_fondo),
-      ),
-    );
+    return Scaffold(body: pantalla_de_navegacion(color_de_fondo: color_de_fondo,));
   }
 }
